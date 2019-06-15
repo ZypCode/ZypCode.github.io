@@ -215,12 +215,9 @@
                 <p>最近项目需要对Mac系统的内核扩展开发进行了调研，本文记录开发环境的搭建以及简单的示例。</p>
 <p>##虚拟机安装Mac系统<br>因为内核的开发经常容易引起系统崩溃，所以最好使用虚拟机，通过快照能够方便的还原。</p>
 <ol>
-<li><p>制作镜像<br> 参考<a href="https://iweiyun.github.io/2018/12/21/mac-kernel-dev/" target="_blank" rel="noopener">https://iweiyun.github.io/2018/12/21/mac-kernel-dev/</a><br> 此处有制作好的镜像在百度云：</p>
-<pre><code>链接:https://pan.baidu.com/s/1QkZXaIc9m1hhx7cSDpq9bA  密码:yccj</code></pre></li>
-<li><p>虚拟机工具安装<br> 这里选择使用<a href="https://www.newasp.net/soft/462096.html" target="_blank" rel="noopener">VMware Fusion</a></p>
-</li>
-<li><p>创建虚拟机</p>
-</li>
+<li>制作镜像<br> 参考<a href="https://iweiyun.github.io/2018/12/21/mac-kernel-dev/" target="_blank" rel="noopener">https://iweiyun.github.io/2018/12/21/mac-kernel-dev/</a><br> 此处有制作好的镜像在百度云：<pre><code>链接:https://pan.baidu.com/s/1QkZXaIc9m1hhx7cSDpq9bA  密码:yccj</code></pre></li>
+<li>虚拟机工具安装<br> 这里选择使用<a href="https://www.newasp.net/soft/462096.html" target="_blank" rel="noopener">VMware Fusion</a></li>
+<li>创建虚拟机</li>
 </ol>
 <p>##虚拟机环境搭建</p>
 <ol start="4">
@@ -267,7 +264,8 @@
 <p>此时可以通过命令查看日志</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">log show --last=3m --predicate 'sender == "KauthORama"'</span><br></pre></td></tr></table></figure>
 
-<p>##真机远程调试<br>因为10步中加了int 3进行断点，所以12步操作hahaha文件时系统会卡住，表明程序被断下，这时可以通过真机进行远程调试。</p>
+<p>##真机远程调试</p>
+<p>因为10步中加了int 3进行断点，所以12步操作hahaha文件时系统会卡住，表明程序被断下，这时可以通过真机进行远程调试。</p>
 <p>在真机里也安装与虚拟机系统版本一样的KDK，然后通过lldb进行远程调试。</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">lldb /Library/Developer/KDKs/KDK_10.14.5_18F132.kdk/System/Library/Kernels/kernel.development</span><br><span class="line">kdp-remote 172.16.103.128 //这里就是之前查看的虚拟机ip</span><br></pre></td></tr></table></figure>
 
