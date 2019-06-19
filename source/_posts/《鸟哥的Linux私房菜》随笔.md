@@ -1,5 +1,5 @@
 ---
-title: 《鸟哥的Linux私房菜随笔》
+title: 《鸟哥的Linux私房菜》随笔
 date: 2019-05-29 15:46:54
 categories:
 - 随笔
