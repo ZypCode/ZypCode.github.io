@@ -212,7 +212,20 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                
+                <p>可以通过Mac系统的内核扩展做很多事情，这里总结些能够实现的功能。</p>
+<h2 id="文件访问拦截"><a href="#文件访问拦截" class="headerlink" title="文件访问拦截"></a>文件访问拦截</h2><p><a href="https://developer.apple.com/library/archive/technotes/tn2127/_index.html#//apple_ref/doc/uid/DTS10003591-CH1-SUBSECTION11" target="_blank" rel="noopener">官方文档</a></p>
+<p><a href="https://developer.apple.com/library/archive/samplecode/KauthORama/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003633" target="_blank" rel="noopener">官方sample</a></p>
+<p>使用苹果在10.4后引入的Kauth（Kernel Authorization）实现。</p>
+<p>Kauth里的Vnode Scope，会回调所有的文件系统操作给KEXT中注册的回调函数，包括读写、执行、删除等，并且可以由KEXT决定是否拒绝访问。</p>
+<p><strong>重要函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kauth_listen_scope 注册一个监听器</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_ALLOW      (1)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_DENY       (2)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_DEFER      (3)</span></span><br><span class="line"><span class="number">3</span>个返回值，用来区分是否拒绝访问。</span><br></pre></td></tr></table></figure>
+
+<h2 id="网络访问拦截"><a href="#网络访问拦截" class="headerlink" title="网络访问拦截"></a>网络访问拦截</h2><p><a href="https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/NKEConceptual/socket_nke/socket_nke.html#//apple_ref/doc/uid/TP40001858-CH228-SW1" target="_blank" rel="noopener">官方文档</a></p>
+<p><a href="https://developer.apple.com/library/archive/samplecode/tcplognke/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003669" target="_blank" rel="noopener">官方sample</a></p>
+<p>使用苹果提供的NKEs(Network kernel extensions)实现。</p>
+<p>使用NKE中的socket filter实现网络访问拦截。</p>
+<p><strong>重要函数</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sflt_register 注册一个filter</span><br><span class="line"></span><br><span class="line">对于TCP，设置<span class="number">2</span>个回调函数返回值为非<span class="number">0</span></span><br><span class="line">sf_connect_in_func		sf_connect_in;</span><br><span class="line">sf_connect_out_func		sf_connect_out;</span><br></pre></td></tr></table></figure>
 
                 
             </div>
