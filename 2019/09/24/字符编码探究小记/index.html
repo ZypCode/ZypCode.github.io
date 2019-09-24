@@ -23,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="OSX系统内核扩展开发Demo">
+        <meta property="og:title" content="字符编码探究小记">
     
 
     <!--Open Graph Description-->
@@ -55,7 +55,7 @@
 
     <!-- Title -->
     
-    <title>OSX系统内核扩展开发Demo - YuPeng小栈</title>
+    <title>字符编码探究小记 - YuPeng小栈</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
@@ -165,13 +165,13 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
-                    <h1>OSX系统内核扩展开发Demo</h1>
+                    <h1>字符编码探究小记</h1>
                     
                     <span class="meta">
                         <!-- Date and Author -->
                         
                         
-                            Posted By Zyp on 2019-06-19
+                            Posted By Zyp on 2019-09-24
                         
                     </span>
                 </div>
@@ -192,7 +192,7 @@
                         
 
 
-<a href="/tags/osx系统内核/">#osx系统内核</a>
+<a href="/tags/字符编码/">#字符编码</a>
 
 
                     
@@ -201,7 +201,7 @@
                     
                         
 
-<a href="/categories/教程/">教程</a>
+<a href="/categories/随笔/">随笔</a>
 
                     
                 </div>
@@ -212,20 +212,41 @@
 
             <!-- Post Main Content -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <p>可以通过Mac系统的内核扩展做很多事情，这里总结些能够实现的功能。</p>
-<h2 id="文件访问拦截"><a href="#文件访问拦截" class="headerlink" title="文件访问拦截"></a>文件访问拦截</h2><p><a href="https://developer.apple.com/library/archive/technotes/tn2127/_index.html#//apple_ref/doc/uid/DTS10003591-CH1-SUBSECTION11" target="_blank" rel="noopener">官方文档</a></p>
-<p><a href="https://developer.apple.com/library/archive/samplecode/KauthORama/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003633" target="_blank" rel="noopener">官方sample</a></p>
-<p>使用苹果在10.4后引入的Kauth（Kernel Authorization）实现。</p>
-<p>Kauth里的Vnode Scope，会回调所有的文件系统操作给KEXT中注册的回调函数，包括读写、执行、删除等，并且可以由KEXT决定是否拒绝访问。</p>
-<p><strong>重要函数</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kauth_listen_scope 注册一个监听器</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_ALLOW      (1)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_DENY       (2)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> KAUTH_RESULT_DEFER      (3)</span></span><br><span class="line"><span class="number">3</span>个返回值，用来区分是否拒绝访问。</span><br></pre></td></tr></table></figure>
+                <p>在写C++项目的过程中，发现自己对string、wstring、CString等字符相关的东西很模糊，所以抽空认真查了些材料，这里做一个小记。</p>
+<h4 id="字符编码基础"><a href="#字符编码基础" class="headerlink" title="字符编码基础"></a>字符编码基础</h4><p>首先说说最基础的字符编码，为了统一在计算机上字符的表示，ASCII字符集最先出现，它使用7位来表示一个字符，而我们一般用字节（8位）作为基本单位，所以第一位总是0，后来IBM进行了扩展，用8位来表示一个字符，当第一位是0时仍表示之前的常用字符，是1时表示其他补充的字符。</p>
+<p>一个字节用于表示英文及标点足够，但是对其他一些文字就不够了。并且出现了各种字符集，它们之间进行数据交换也会出现问题，于是Unicode就出现了。</p>
+<p>Unicode第一个版本用2个字节表示所有字符，这样说容易产生歧义，其实Unicode涉及到两个步骤，首先是定义一个规范，给所有的字符指定一个唯一对应的数字。第二步才是怎么把字符对应的数字保存在计算机中，这才涉及到实际在计算机中占多少字节空间。Unicode是用0至65535之间的数字来表示所有字符，其中0至127这128个数字表示的字符仍然跟ASCII完全一样，这是第一步，第二步就是怎么把0至65535这些数字转化成01串保存到计算机中，这肯定就有不同的保存方式了，于是出现了UTF(unicode transformation format)，有UTF-8、UTF-16。</p>
+<p>UTF-16比较好理解，就是任何字符对应的数字都用两个字节来保存，但是很显然如果都是英文字母这做有点浪费。UTF-16不需要用啥字符来做标志，所以两字节也就是2的16次能表示65536个字符。</p>
+<p>于是又有个UTF-8，这里的8非常容易误导人理解为一个字节表示一个字符。当用UTF-8时表示一个字符是可变的，有可能是用一个字节表示一个字符，也可能是两个、三个。当然最多不能超过3个字节了，反正是根据字符对应的数字大小来确定。</p>
+<p>用UTF-8有点复杂，因为程序是把一个字节一个字节的来读取，然后再根据字节中开头的bit标志来识别是该把1个还是两个或三个字节做为一个单元来处理：</p>
+<ul>
+<li><p>0xxxxxxx，表示把一个字节做为一个单元，就跟ASCII完全一样。</p>
+</li>
+<li><p>110xxxxx 10xxxxxx，如果是这样的格式，则把两个字节当一个单元。</p>
+</li>
+<li><p>1110xxxx 10xxxxxx 10xxxxxx，如果是这种格式则是三个字节当一个单元。</p>
+</li>
+</ul>
+<p>UTF-8由于里面有额外的标志信息，所有一个字节只能表示2的7次方128个字符，两个字节只能表示2的11次方2048个字符，而三个字节能表示2的16次方，65536个字符。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">用UTF-8表示&quot;汉&quot;，由于&quot;汉&quot;的编码27721大于2048了所有两个字节还不够，只能用三个字节来表示。</span><br><span class="line">1110xxxx 10xxxxxx 10xxxxxx这种格式，把27721对应的二进制填充XXX符号，填充方式可以不一样，Big-Endian就是从左到右填充，Little-Endian是从右到左。</span><br></pre></td></tr></table></figure>
 
-<h2 id="网络访问拦截"><a href="#网络访问拦截" class="headerlink" title="网络访问拦截"></a>网络访问拦截</h2><p><a href="https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/NKEConceptual/socket_nke/socket_nke.html#//apple_ref/doc/uid/TP40001858-CH228-SW1" target="_blank" rel="noopener">官方文档</a></p>
-<p><a href="https://developer.apple.com/library/archive/samplecode/tcplognke/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003669" target="_blank" rel="noopener">官方sample</a></p>
-<p>使用苹果的NKE机制(Network kernel extensions)实现，NKE就是描述与网络栈交互或扩展网络栈的KEXT。</p>
-<p>使用NKE中的socket filter实现网络访问拦截。</p>
-<p><strong>重要函数</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sflt_register 注册一个filter</span><br><span class="line"></span><br><span class="line">对于TCP，设置<span class="number">2</span>个回调函数返回值为非<span class="number">0</span></span><br><span class="line">sf_connect_in_func		sf_connect_in;</span><br><span class="line">sf_connect_out_func		sf_connect_out;</span><br></pre></td></tr></table></figure>
+<p>可能会问当用程序打开一个文件时我们怎么知道那是用的UTF-8还是UTF-16？自然会有点啥标志，在文件的开头几个字节就是标志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EF BB BF 表示UTF-8</span><br><span class="line">FE FF 表示UTF-16</span><br></pre></td></tr></table></figure>
+
+<p>从1996年开始又来了Unicode版本2，用四个字节表示所有字符，这样就出现了UTF-8、UTF16、UTF-32。原理和之前是完全一样的，UTF-32就是把所有的字符都用32bit也就是4个字节来表示，UTF-8可以选择1至8个字节中的任一个来表示，UTF-16只能是选两字节或四字节。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">EF BB BF　　　 UTF-8</span><br><span class="line">FE FF　　　　　UTF-16/UCS-2, little endian</span><br><span class="line">FF FE　　　　　UTF-16/UCS-2, big endian</span><br><span class="line">FF FE 00 00　　UTF-32/UCS-4, little endian.</span><br><span class="line">00 00 FE FF　　UTF-32/UCS-4, big-endian.</span><br></pre></td></tr></table></figure>
+
+<h4 id="一些开发库说明"><a href="#一些开发库说明" class="headerlink" title="一些开发库说明"></a>一些开发库说明</h4><p>STL（standard template library标准模板库）：c++程序库的一部分，其中包含了一些工具方便使用，如容器和迭代器。</p>
+<p>MFC（Microsoft Foundation Classes）：微软的应用程序框架，利用c++的语法对windows系统api进行的面向对象的封装，主要用于开发软件程序界面。</p>
+<p>ATL（ActiveX Template Library）：也是一个c++模板库，主要用于开发COM，ActiveX组件。</p>
+<h4 id="宽窄字符"><a href="#宽窄字符" class="headerlink" title="宽窄字符"></a>宽窄字符</h4><p>wstring是宽char，Unicode编码，所以一般情况下一个字符占两个字节大小</p>
+<p>string是窄char，AscII编码，所以一个字符占一个字节大小</p>
+<p>而CString是对string(字符串)和wstring(宽字符串)的一个封装，常用在mfc中，用来解决编码问题。</p>
+<p>要把std::string或者std::wstring类型的数据存放到CString中，直接调用string::c_str()或者wstring::c_str()就行了。</p>
+<p>CString::GetBuffer(0)就能转换到string或者wstring。如果编译时候定义了UNICODE，则转换到wstring，这时使用CT2A函数可以转为stirng；如果未定义，则转换到string。</p>
+<h4 id="一些小例子"><a href="#一些小例子" class="headerlink" title="一些小例子"></a>一些小例子</h4><p><img src="1.jpg" alt="窄字符编码中文"><br><img src="2.jpg" alt="宽字符编码中文"></p>
+<p>在VS工程属性里无论你选择Multi-Byte Character Set 或 Unicode Character Set字符集，char str[] = “中”;这个表达式里，”中”都是ANSI编码，编码值都是[0xD6,0xD0]。即默认情况下，如果不加_T或L，默认情况下所有的字符都是ANSI编码。</p>
+
 
                 
             </div>
