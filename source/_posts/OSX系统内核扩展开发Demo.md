@@ -36,7 +36,7 @@ kauth_listen_scope 注册一个监听器
 
 [官方sample](https://developer.apple.com/library/archive/samplecode/tcplognke/Introduction/Intro.html#//apple_ref/doc/uid/DTS10003669)
 
-使用苹果提供的NKEs(Network kernel extensions)实现。
+使用苹果的NKE机制(Network kernel extensions)实现，NKE就是描述与网络栈交互或扩展网络栈的KEXT。
 
 使用NKE中的socket filter实现网络访问拦截。
 
